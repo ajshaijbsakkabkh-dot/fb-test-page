@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Facebook App Review Test</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 50px;
+        }
+        #status {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            min-height: 50px;
+            text-align: left;
+            background-color: #f9f9f9;
+        }
+        .fb-login-button {
+            padding: 15px 30px;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>واجهة اختبار مراجعة فيسبوك</h1>
+    <p>الرجاء الضغط على الزر وتسجيل الدخول للموافقة على الأذونات.</p>
+
+    <div 
+        class="fb-login-button" 
+        data-width="" 
+        data-size="large" 
+        data-button-type="login_with" 
+        data-layout="default" 
+        data-auto-logout-link="true" 
+        data-use-continue-as="false"
+        data-scope="public_profile,email,pages_read_engagement"
+    ></div>
+
+    <hr>
+    <h3>نتائج الاختبار (يجب أن تظهر قائمة الصفحات هنا):</h3>
+    <div id="status">
+        <p>لم يتم تسجيل الدخول بعد.</p>
+    </div>
+
+    <script>
+        // *** معرف تطبيقك المُدمج ***
+        var yourAppId = '1152834883431787'; 
+        
+        window.fbAsyncInit = function() {
+            FB.init({
+                appId      : yourAppId,
+                cookie     : true,
+                xfbml      : true,
+                version    : 'v19.0' // يرجى التحقق من أحدث إصدار عند الرفع
+            });
+            
+            // عند تحميل الصفحة، نتحقق من حالة تسجيل الدخول
+            FB.getLoginStatus(function(response) {
+                if (response.status === 'connected') {
+                    checkLoginState();
+                }
+            });
+        };
+
+        (function(d, s, id){
+            var js, fjs = d.getElementsByTagName(s)[0];
+            if (d.getElementById(id)) {return;}
+            js = d.createElement(s); js.id = id;
+            js.src = "https://connect.facebook.net/en_US/sdk.js";
+            fjs.parentNode.insertBefore(js, fjs);
+        }(document, 'script', 'facebook-jssdk'));
+
+        // وظيفة اختبار: تتحقق من تسجيل الدخول وتطلب قائمة الصفحات (تثبت عمل pages_read_engagement)
+        function checkLoginState() {
+            FB.getLoginStatus(function(response) {
+                if (response.status === 'connected') {
+                    document.getElementById('status').innerHTML = 'تم تسجيل الدخول بنجاح! نطلب الآن الصفحات...';
+                    
+                    // استخدام '/me/accounts' لطلب قائمة الصفحات، وهذا يتطلب إذن pages_read_engagement
+                    FB.api('/me/accounts', function(response) {
+                        if (response && !response.error) {
+                            var pagesList = response.data.map(page => `<li>${page.name} (ID: ${page.id})</li>`).join('');
+                            document.getElementById('status').innerHTML = '<h4>تم استرداد قائمة الصفحات بنجاح (إثبات عمل الإذن):</h4><ul>' + pagesList + '</ul>';
+                        } else {
+                            document.getElementById('status').innerHTML = 'خطأ في استرداد الصفحات: الرجاء التأكد من منح الإذن pages_read_engagement.<br>تفاصيل الخطأ: ' + JSON.stringify(response.error);
+                        }
+                    });
+                } else {
+                    document.getElementById('status').innerHTML = 'الرجاء الضغط على زر تسجيل الدخول.';
+                }
+            });
+        }
+    </script>
+</body>
+</html>
