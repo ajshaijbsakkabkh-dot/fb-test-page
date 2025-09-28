@@ -10,20 +10,12 @@
             text-align: center;
             padding: 50px;
         }
-        #status {
-            margin-top: 20px;
-            padding: 10px;
-            border: 1px solid #ccc;
-            min-height: 50px;
-            text-align: left;
-            background-color: #f9f9f9;
-        }
         .login-button {
             display: inline-block;
             padding: 10px 20px;
-            background-color: #4267B2; /* لون أزرق فيسبوك */
+            background-color: #4267B2; 
             color: white;
-            text-decoration: none; /* لإزالة خط الرابط */
+            text-decoration: none; 
             border-radius: 5px;
             font-size: 18px;
             cursor: pointer;
@@ -37,11 +29,7 @@
     <p>الرجاء الضغط على الزر لتوجيهك مباشرة إلى صفحة منح الأذونات.</p>
 
     <a 
-        href="https://www.facebook.com/v19.0/dialog/oauth?
-        client_id=1152834883431787
-        &redirect_uri=https://ajshaijbsakkakh.github.io/fb-test-page/
-        &scope=public_profile,email,pages_read_engagement
-        &response_type=token"
+        href="https://www.facebook.com/v19.0/dialog/oauth?client_id=1152834883431787&redirect_uri=https://ajshaijbsakkakh.github.io/fb-test-page/&scope=public_profile,email,pages_read_engagement&response_type=token"
         class="login-button"
     >
         تسجيل الدخول وبدء المراجعة
@@ -50,9 +38,8 @@
     <hr>
     <h3>ملاحظات للمراجع:</h3>
     <div id="status">
-        <p>تم استخدام **رابط تسجيل دخول مباشر (Manual Flow)** لضمان عمل الواجهة على كافة المتصفحات.</p>
-        <p>المطلوب هو التأكد من أن النقر على الزر أعلاه **يؤدي إلى ظهور نافذة منح الأذونات**، والتي تتضمن إذن **pages_read_engagement**.</p>
-        <p>بعد منح الإذن، سيعود المتصفح إلى هذه الصفحة.</p>
+        <p>تم استخدام **رابط تسجيل دخول مباشر (Manual OAuth Flow)** لإثبات طلب الإذن.</p>
+        <p>المطلوب هو التأكد من أن النقر على الزر أعلاه **يؤدي إلى ظهور شاشة طلب الأذونات**.</p>
     </div>
 
 </body>
