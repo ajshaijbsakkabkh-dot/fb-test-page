@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>منشئ أكواد المانهوا - إصدار الإدارة الشامل</title>
     <style>
+        /* CSS Styles */
         body { font-family: 'Arial', sans-serif; background-color: #f4f4f9; color: #333; padding: 10px; }
         .container { max-width: 1000px; margin: 10px auto; background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); }
         h1, h2 { color: #0056b3; text-align: center; border-bottom: 2px solid #eee; padding-bottom: 10px; margin-bottom: 15px; }
@@ -25,6 +26,8 @@
         .app-mode .container { padding: 10px; }
         .modal { display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.8); }
         .modal-content { background-color: #fefefe; margin: 5% auto; padding: 20px; border-radius: 10px; width: 90%; max-width: 600px; }
+        .flex-row { display: flex; gap: 15px; }
+        .flex-row > div { flex: 1; }
     </style>
 </head>
 <body>
@@ -35,11 +38,22 @@
     <div id="manhwaInfoSection">
         <h2>معلومات المانهوا الأساسية</h2>
         <input type="text" id="manhwaName" placeholder="اسم المانهوا (ضروري للحفظ والتعديل)">
-        <label for="manhwaStatus">الحالة:</label>
-        <select id="manhwaStatus">
-            <option value="مستمرة">مستمرة</option>
-            <option value="متوقفة">متوقفة</option>
-        </select>
+        
+        <div class="flex-row">
+            <div>
+                <label for="manhwaStatus">الحالة:</label>
+                <select id="manhwaStatus">
+                    <option value="مستمرة">مستمرة</option>
+                    <option value="متوقفة">متوقفة</option>
+                    <option value="مكتملة">مكتملة</option>
+                </select>
+            </div>
+            <div>
+                 <label for="chapterCount">عدد الفصول (للعرض):</label>
+                 <input type="text" id="chapterCount" placeholder="مثال: 50">
+            </div>
+        </div>
+        
         <label for="manhwaGenre">التصنيف (فواصل بين التصانيف):</label>
         <input type="text" id="manhwaGenre" placeholder="مثل: أكشن، خيال، رومانسي">
         <label for="manhwaStory">القصة/الملخص:</label>
@@ -48,7 +62,9 @@
 
     <div id="loadSection" class="load-section">
         <h2>تحميل/حذف مانهوا سابقة (الحفظ المحلي)</h2>
-        <select id="existingManhwa"></select>
+        <select id="existingManhwa">
+            <option value="">-- إنشاء مانهوا جديدة --</option>
+        </select>
         <button id="loadManhwaBtn" style="background-color: #007bff;">تحميل المانهوا المختارة</button>
         <button id="deleteManhwaBtn" style="background-color: #dc3545;">حذف المانهوا المختارة</button>
         <hr>
@@ -66,7 +82,7 @@
         <button id="generateCodeBtn" style="background-color: #17a2b8;">1. توليد كود HTML للقراءة</button>
         <button id="generateFullCodeBtn" style="background-color: #6c757d;">2. توليد الكود الكامل (للتحديث)</button> 
         <button id="saveManhwaBtn">3. حفظ المشروع محلياً</button>
-        <button id="openPreviewBtn" style="background-color: #007bff;">4. معاينة الكود</button> 
+        <button id="openPreviewBtn" style="background-color: #007bff;">4. معاينة الكود (غير مُفعل)</button> 
     </div>
 
     <div class="result-code-box">
@@ -76,8 +92,7 @@
     </div>
 </div>
 
-<div id="previewModal" class="modal">
-  </div>
+<div id="previewModal" class="modal"></div>
 
 <template id="chapterTemplate">
     <div class="chapter-section" data-chapter-id="0">
@@ -111,10 +126,11 @@
 
 <script>
     (function() {
-        let manhwaData = { name: '', story: '', genre: '', status: 'مستمرة', chapters: [] };
+        let manhwaData = { name: '', story: '', genre: '', status: 'مستمرة', chapterCount: '', chapters: [] };
         const chaptersContainer = document.getElementById('chaptersContainer');
         const storageKey = 'manhwas';
 
+        // Helper Functions
         function generateUUID() {
              return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
                 var r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
@@ -123,6 +139,7 @@
         }
         function getChapterElements() { return chaptersContainer.querySelectorAll('.chapter-section'); }
 
+        // Local Storage Functions
         function loadManhwasList() {
             const storedManhwas = localStorage.getItem(storageKey);
             return storedManhwas ? JSON.parse(storedManhwas) : {};
@@ -135,6 +152,7 @@
             manhwaData.story = document.getElementById('manhwaStory').value;
             manhwaData.genre = document.getElementById('manhwaGenre').value;
             manhwaData.status = document.getElementById('manhwaStatus').value;
+            manhwaData.chapterCount = document.getElementById('chapterCount').value.trim(); // حفظ عدد الفصول
             updateManhwaDataFromDOM(); 
             let allManhwas = loadManhwasList();
             allManhwas[name] = JSON.parse(JSON.stringify(manhwaData)); 
@@ -174,11 +192,12 @@
             document.getElementById('finalHtmlCode').textContent = 'تم تهيئة الواجهة لمانهوا جديدة.';
 
             if (!selectedName) {
-                manhwaData = { name: '', story: '', genre: '', status: 'مستمرة', chapters: [] };
+                manhwaData = { name: '', story: '', genre: '', status: 'مستمرة', chapterCount: '', chapters: [] };
                 document.getElementById('manhwaName').value = '';
                 document.getElementById('manhwaStory').value = '';
                 document.getElementById('manhwaGenre').value = '';
                 document.getElementById('manhwaStatus').value = 'مستمرة';
+                document.getElementById('chapterCount').value = '';
                 if (getChapterElements().length === 0) { addChapter(null); }
                 return;
             }
@@ -190,6 +209,7 @@
                 document.getElementById('manhwaStory').value = manhwaData.story;
                 document.getElementById('manhwaGenre').value = manhwaData.genre;
                 document.getElementById('manhwaStatus').value = manhwaData.status;
+                document.getElementById('chapterCount').value = manhwaData.chapterCount || '';
                 if (manhwaData.chapters.length === 0) {
                     addChapter(null);
                 } else {
@@ -199,6 +219,7 @@
             }
         }
         
+        // Chapter/Image Management
         function addChapter(chapterData = null) {
             const template = document.getElementById('chapterTemplate');
             const chapterClone = template.content.cloneNode(true).querySelector('.chapter-section');
@@ -339,6 +360,7 @@
             }
         }
         
+        // Code Generation
         function updateManhwaDataFromDOM() {
             manhwaData.chapters = [];
             getChapterElements().forEach((chapterElement, index) => {
@@ -371,28 +393,4 @@
                 chaptersHtml += `
 <div class="chapter">
     <h2>${chapter.name}</h2>
-${imagesHtml}
-</div>
-            `;
-            });
-            
-            const finalCode = `
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>${manhwaData.name} - قراءة الفصول</title>
-    <style>
-        body { font-family: 'Arial', sans-serif; background-color: #222; color: #fff; text-align: center; margin: 0; padding: 0; }
-        .manhwa-info { background: #333; padding: 20px; border-radius: 0; margin-bottom: 0; }
-        .manhwa-info h1 { color: #fff; border-bottom: 1px solid #555; padding-bottom: 10px; margin-bottom: 10px; }
-        .chapter img { max-width: 100%; height: auto; display: block; margin: 0 auto 5px auto; }
-        .chapter { margin-bottom: 30px; padding: 10px 0; background: #222; }
-    </style>
-</head>
-<body>
-    <div class="manhwa-info">
-        <h1>${manhwaData.name}</h1>
-        <p><strong>الحالة:</strong> ${manhwaData.status}</p>
-        <p><strong>التصنيف:</strong>
+${image
