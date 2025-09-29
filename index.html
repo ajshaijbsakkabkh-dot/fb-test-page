@@ -1,46 +1,620 @@
 <!DOCTYPE html>
-<html>
+<html lang="ar" dir="rtl">
 <head>
-    <title>واجهة اختبار مراجعة فيسبوك</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>منشئ أكواد صفحات المانهوا - Base64 و Data URL</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            padding: 50px;
-        }
-        .login-button {
-            display: inline-block;
-            padding: 10px 20px;
-            background-color: #4267B2;
-            color: white;
-            text-decoration: none;
-            border-radius: 5px;
-            font-size: 18px;
-            cursor: pointer;
-            margin-top: 20px;
-        }
+        /* ==================================== */
+        /* الأنماط الأساسية (لم تتغير) */
+        /* ==================================== */
+        body { font-family: 'Arial', sans-serif; background-color: #f4f4f9; color: #333; padding: 20px; }
+        .container { max-width: 1000px; margin: 20px auto; background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15); }
+        h1, h2 { color: #0056b3; text-align: center; border-bottom: 2px solid #eee; padding-bottom: 10px; margin-bottom: 20px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        input[type="text"], textarea, select { width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 16px; }
+        button { background-color: #007bff; color: white; padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; margin: 5px; transition: background-color 0.3s; }
+        button:hover { background-color: #0056b3; }
+        .chapter-section { border: 1px solid #ddd; padding: 15px; margin-top: 20px; border-radius: 8px; background-color: #f9f9f9; }
+        .image-input-group { display: flex; align-items: center; margin-bottom: 10px; }
+        .image-input-group input[type="file"] { flex-grow: 1; margin-left: 10px; }
+        .result-code-box { margin-top: 30px; padding: 15px; background-color: #e9ecef; border: 1px solid #ced4da; border-radius: 6px; }
+        .result-code-box pre { white-space: pre-wrap; word-wrap: break-word; text-align: left; margin: 0; max-height: 400px; overflow-y: auto; }
+        .flex-row { display: flex; gap: 15px; }
+        .flex-row > div { flex: 1; }
+
+        /* ==================================== */
+        /* أنماط المعاينة (Modal) (لم تتغير) */
+        /* ==================================== */
+        .modal { display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.8); padding-top: 60px; }
+        .modal-content { background-color: #fefefe; margin: 5% auto; padding: 20px; border: 1px solid #888; width: 90%; max-width: 600px; border-radius: 10px; position: relative; }
+        .close-btn { color: #aaa; float: left; font-size: 28px; font-weight: bold; position: absolute; top: 10px; left: 10px; }
+        .close-btn:hover, .close-btn:focus { color: black; text-decoration: none; cursor: pointer; }
+        .phone-emulator { display: flex; flex-direction: column; align-items: center; margin-top: 20px; }
+        .emulator-controls { display: flex; justify-content: space-between; width: 100%; margin-bottom: 10px; text-align: right; direction: rtl; }
+        .emulator-frame-wrapper { resize: horizontal; overflow: hidden; min-width: 280px; max-width: 90%; height: 600px; border: 12px solid #333; border-radius: 20px; box-shadow: 0 0 20px rgba(0, 0, 0, 0.5); margin-bottom: 10px; }
+        .emulator-frame-wrapper iframe { width: 100%; height: 100%; border: none; background-color: #fff; }
     </style>
 </head>
 <body>
 
-    <h1>واجهة اختبار مراجعة فيسبوك</h1>
-    <p>الرجاء الضغط على الزر لتوجيهك مباشرة إلى صفحة منح الأذونات.</p>
+<div class="container" id="mainContainer">
+    <h1>📚 محوّل ومنظّم فصول المانهوا</h1>
 
-    <a 
-        href="https://www.facebook.com/v19.0/dialog/oauth?client_id=1152834883431787&redirect_uri=https://ajshaijbsakkakh-dot.github.io/&scope=pages_read_engagement&response_type=token"
-        class="login-button"
-    >
-        تسجيل الدخول وبدء المراجعة
-    </a>
-
-    <hr>
-    <h3>ملاحظات للمراجع:</h3>
-    <div id="status">
-        <p>تم استخدام **رابط تسجيل دخول مباشر (Manual Flow)**.</p>
-        <p>الهدف هو التأكد من أن النقر على الزر أعلاه **يؤدي إلى ظهور شاشة طلب الإذن `pages_read_engagement`**.</p>
+    <h2>معلومات المانهوا</h2>
+    <div class="flex-row">
+        <div>
+            <label for="manhwaName">اسم المانهوا:</label>
+            <input type="text" id="manhwaName" placeholder="اسم المانهوا (ضروري للتعديل والحفظ)">
+        </div>
+        <div>
+            <label for="manhwaStatus">الحالة:</label>
+            <select id="manhwaStatus">
+                <option value="مستمرة">مستمرة</option>
+                <option value="متوقفة">متوقفة</option>
+            </select>
+        </div>
     </div>
+    <label for="manhwaGenre">التصنيف (فواصل بين التصانيف):</label>
+    <input type="text" id="manhwaGenre" placeholder="مثل: أكشن، خيال، رومانسي">
+    <label for="manhwaStory">القصة/الملخص:</label>
+    <textarea id="manhwaStory" rows="4" placeholder="اكتب قصة المانهوا هنا..."></textarea>
+
+    <h2>اختيار المانهوا للتعديل</h2>
+    <label for="existingManhwa">اختر مانهوا موجودة للتعديل أو ابدأ بإنشاء واحدة جديدة:</label>
+    <select id="existingManhwa">
+        <option value="">-- إنشاء مانهوا جديدة --</option>
+    </select>
+    <button data-action="loadManhwa">تحميل بيانات المانهوا المختارة</button>
+    <hr>
+    
+    <h2>إدارة الفصول</h2>
+    <div id="chaptersContainer">
+        </div>
+    
+    <button data-action="addChapter" style="background-color: #28a745;">+ إضافة فصل جديد</button>
+    
+    <hr>
+
+    <div style="text-align: center; margin-top: 20px;">
+        <button data-action="generateCode">توليد روابط الصور وكود HTML</button>
+        <button data-action="saveManhwa">حفظ بيانات المانهوا محلياً</button>
+        <button data-action="openPreview" style="background-color: #007bff;">▶️ معاينة الكود</button> 
+    </div>
+
+    <div class="result-code-box">
+        <h3>📄 كود HTML النهائي للفصول:</h3>
+        <pre id="finalHtmlCode">سيظهر الكود هنا بعد التوليد والحفظ...</pre>
+        <button data-action="copyCode" style="margin-top: 10px;">نسخ الكود</button>
+    </div>
+</div>
+
+<div id="previewModal" class="modal">
+  <div class="modal-content">
+    <span class="close-btn" data-action="closePreview">&times;</span> 
+    <h2 style="text-align: right; border: none; margin-bottom: 5px;">تجربة عرض صفحة المانهوا</h2>
+
+    <div class="phone-emulator">
+        <div class="emulator-controls">
+            <span id="viewportWidth">العرض: 360px</span>
+            <button data-action="resetViewport" style="background-color: #ffc107; color: #333; padding: 5px 10px; margin: 0;">إعادة ضبط</button>
+        </div>
+        
+        <div id="emulatorFrameWrapper" class="emulator-frame-wrapper">
+            <iframe id="previewIframe"></iframe>
+        </div>
+        <p style="font-size: 0.8em; color: #666;">**يمكنك سحب الحافة اليسرى لـ إطار الهاتف لتغيير العرض (محاكاة الشاشات المختلفة)**</p>
+    </div>
+  </div>
+</div>
+
+<template id="chapterTemplate">
+    <div class="chapter-section" data-chapter-id="0">
+        <h3>الفصل رقم <span class="chapter-number">1</span></h3>
+        <input type="text" class="chapter-name" placeholder="اسم الفصل (مثال: الفصل 1)">
+        <div class="images-container">
+            </div>
+        <button type="button" data-action="addImageInputTemplate" class="add-image-btn" style="background-color: #007bff;">+ إضافة صورة جديدة</button>
+        <button type="button" data-action="removeChapter" style="background-color: #dc3545;">- إزالة الفصل</button>
+        <div class="preview-container" style="margin-top: 15px; border-top: 1px dashed #ddd; padding-top: 10px;"></div>
+    </div>
+</template>
+
+<template id="imageInputTemplate">
+    <div class="image-input-group" data-image-id="0">
+        <label>صورة <span class="image-number">1</span>:</label>
+        <input type="file" data-action="previewImage" accept="image/*">
+        <input type="hidden" class="base64-link" value="">
+        <button type="button" data-action="removeImage" style="background-color: #dc3545; margin-right: 5px;">- إزالة</button>
+    </div>
+</template>
+
+
+<script>
+    (function() {
+        // ===============================================
+        //           هيكل البيانات الأساسي
+        // ===============================================
+
+        let manhwaData = {
+            name: '',
+            story: '',
+            genre: '',
+            status: 'مستمرة',
+            chapters: [] // تحتوي على {id: string, name: string, base64Links: []}
+        };
+        const mainContainer = document.getElementById('mainContainer');
+
+        // ===============================================
+        //           دوَال مساعدة
+        // ===============================================
+
+        // توليد معرف فريد لكل فصل (يحل مشكلة الترقيم)
+        function generateUUID() {
+            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                var r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
+                return v.toString(16);
+            });
+        }
+
+        function getChapterElements() {
+            return document.getElementById('chaptersContainer').querySelectorAll('.chapter-section');
+        }
+
+        // ===============================================
+        //           التحميل والحفظ المحلي (localStorage)
+        // ===============================================
+
+        function loadManhwasList() {
+            const storedManhwas = localStorage.getItem('manhwas');
+            return storedManhwas ? JSON.parse(storedManhwas) : {};
+        }
+
+        function saveManhwaData() {
+            const name = document.getElementById('manhwaName').value.trim();
+            if (!name) {
+                alert("الرجاء إدخال اسم المانهوا للحفظ.");
+                return;
+            }
+
+            manhwaData.name = name;
+            manhwaData.story = document.getElementById('manhwaStory').value;
+            manhwaData.genre = document.getElementById('manhwaGenre').value;
+            manhwaData.status = document.getElementById('manhwaStatus').value;
+
+            updateManhwaDataFromDOM(); 
+
+            let allManhwas = loadManhwasList();
+            allManhwas[name] = JSON.parse(JSON.stringify(manhwaData)); 
+            localStorage.setItem('manhwas', JSON.stringify(allManhwas));
+            
+            alert(`تم حفظ بيانات المانهوا "${name}" بنجاح.`);
+            
+            populateExistingManhwaDropdown(allManhwas);
+        }
+
+        function populateExistingManhwaDropdown(allManhwas) {
+            const select = document.getElementById('existingManhwa');
+            select.innerHTML = '<option value="">-- إنشاء مانهوا جديدة --</option>'; 
+            
+            const manhwaList = allManhwas || loadManhwasList();
+            
+            for (const name in manhwaList) {
+                const option = document.createElement('option');
+                option.value = name;
+                option.textContent = name;
+                select.appendChild(option);
+            }
+        }
+
+        function loadManhwaForEditing() {
+            const selectedName = document.getElementById('existingManhwa').value;
+            const chaptersContainer = document.getElementById('chaptersContainer');
+            chaptersContainer.innerHTML = '';
+
+            if (!selectedName) {
+                // تهيئة واجهة جديدة
+                manhwaData = { name: '', story: '', genre: '', status: 'مستمرة', chapters: [] };
+                document.getElementById('manhwaName').value = '';
+                document.getElementById('manhwaStory').value = '';
+                document.getElementById('manhwaGenre').value = '';
+                document.getElementById('manhwaStatus').value = 'مستمرة';
+                
+                // إضافة فصل افتراضي واحد
+                addChapter(null); 
+                document.getElementById('finalHtmlCode').textContent = 'تم تهيئة الواجهة لمانهوا جديدة.';
+                return;
+            }
+
+            const allManhwas = loadManhwasList();
+            if (allManhwas[selectedName]) {
+                manhwaData = allManhwas[selectedName];
+                
+                // ملء الحقول الرئيسية
+                document.getElementById('manhwaName').value = manhwaData.name;
+                document.getElementById('manhwaStory').value = manhwaData.story;
+                document.getElementById('manhwaGenre').value = manhwaData.genre;
+                document.getElementById('manhwaStatus').value = manhwaData.status;
+
+                // إعادة بناء واجهة الفصول
+                manhwaData.chapters.forEach(chap => {
+                    addChapter(chap); 
+                });
+                
+                document.getElementById('finalHtmlCode').textContent = 'تم تحميل بيانات المانهوا بنجاح. يمكنك الآن التعديل أو إضافة فصول جديدة.';
+            }
+        }
+
+        // ===============================================
+        //           إدارة واجهة الفصول والصور (Template Logic)
+        // ===============================================
+        
+        // دالة إضافة فصل باستخدام النموذج (Template)
+        function addChapter(chapterData = null) {
+            const chaptersContainer = document.getElementById('chaptersContainer');
+            const template = document.getElementById('chapterTemplate');
+            
+            // استنساخ النموذج (Chapter Template)
+            const chapterClone = template.content.cloneNode(true).querySelector('.chapter-section');
+            const chapterID = chapterData ? chapterData.id : generateUUID();
+            const chapterNum = getChapterElements().length + 1;
+            
+            // تحديث البيانات في الفصل الجديد
+            chapterClone.setAttribute('data-chapter-id', chapterID);
+            chapterClone.querySelector('.chapter-number').textContent = chapterNum;
+            chapterClone.querySelector('h3').textContent = `الفصل رقم ${chapterNum}`;
+            chapterClone.querySelector('.chapter-name').value = chapterData ? chapterData.name : `الفصل ${chapterNum}`;
+
+            // إضافة الفصل إلى الحاوية
+            chaptersContainer.appendChild(chapterClone);
+
+            // إضافة الصور (إن وجدت) أو حقل افتراضي
+            const imagesContainer = chapterClone.querySelector('.images-container');
+            const addImageButton = chapterClone.querySelector('.add-image-btn');
+            
+            // تحديث data-action للزر ليعرف الفصل الذي ينتمي إليه
+            addImageButton.setAttribute('data-chapter-id', chapterID);
+            chapterClone.querySelector('button[data-action="removeChapter"]').setAttribute('data-chapter-id', chapterID);
+
+            if (chapterData && chapterData.base64Links.length > 0) {
+                chapterData.base64Links.forEach((link, index) => {
+                    addImageInput(chapterClone, chapterID, link, index + 1);
+                });
+            } else {
+                addImageInput(chapterClone, chapterID, '', 1);
+            }
+            
+            updateChapterNumbers(); // تحديث الأرقام التسلسلية
+        }
+
+        // دالة إضافة حقل صورة باستخدام النموذج (Template)
+        function addImageInput(chapterElement, chapterID, base64Link = '', initialImageNum = null) {
+            const imagesContainer = chapterElement.querySelector('.images-container');
+            const imageTemplate = document.getElementById('imageInputTemplate');
+            
+            // استنساخ النموذج (Image Template)
+            const imageClone = imageTemplate.content.cloneNode(true).querySelector('.image-input-group');
+            const imageID = generateUUID();
+            const imageNum = initialImageNum || imagesContainer.children.length + 1;
+
+            // تحديث البيانات في حقل الصورة الجديد
+            imageClone.setAttribute('data-image-id', imageID);
+            imageClone.querySelector('.image-number').textContent = imageNum;
+            imageClone.querySelector('.base64-link').value = base64Link;
+            
+            // ربط مدخل الملف والأزرار بمعرف الفصل والصورة
+            const fileInput = imageClone.querySelector('input[type="file"]');
+            fileInput.setAttribute('data-chapter-id', chapterID);
+            fileInput.setAttribute('data-image-id', imageID);
+
+            const removeButton = imageClone.querySelector('button[data-action="removeImage"]');
+            removeButton.setAttribute('data-chapter-id', chapterID);
+            removeButton.setAttribute('data-image-id', imageID);
+            
+            imagesContainer.appendChild(imageClone);
+
+            // إذا كانت هناك بيانات Base64 محملة، قم بعرض المعاينة
+            if (base64Link) {
+                 displayImagePreview(chapterElement.querySelector('.preview-container'), imageID, base64Link);
+            }
+        }
+
+        // دالة إزالة الفصل
+        function removeChapter(chapterID) {
+            if (!confirm(`هل أنت متأكد من إزالة هذا الفصل؟`)) return;
+
+            const chapterElement = document.querySelector(`.chapter-section[data-chapter-id="${chapterID}"]`);
+            if (chapterElement) {
+                chapterElement.remove();
+                
+                // إزالة الفصل من البيانات
+                manhwaData.chapters = manhwaData.chapters.filter(c => c.id !== chapterID);
+                
+                updateChapterNumbers();
+                alert(`تم حذف الفصل بنجاح.`);
+            }
+        }
+
+        // دالة إزالة حقل صورة
+        function removeImage(imageID) {
+            const imageGroup = document.querySelector(`.image-input-group[data-image-id="${imageID}"]`);
+            if (imageGroup) {
+                const chapterElement = imageGroup.closest('.chapter-section');
+                imageGroup.remove();
+                
+                // إزالة المعاينة
+                const img = document.querySelector(`.preview-container img[data-image-id="${imageID}"]`);
+                if (img) img.remove();
+                
+                updateImageNumbers(chapterElement);
+            }
+        }
+        
+        // دالة تحديث الأرقام التسلسلية (للعرض فقط)
+        function updateChapterNumbers() {
+            getChapterElements().forEach((chapterElement, index) => {
+                const chapterNum = index + 1;
+                chapterElement.querySelector('.chapter-number').textContent = chapterNum;
+                chapterElement.querySelector('h3').textContent = `الفصل رقم ${chapterNum}`;
+                chapterElement.querySelector('.chapter-name').placeholder = `اسم الفصل (مثال: الفصل ${chapterNum})`;
+                updateImageNumbers(chapterElement);
+            });
+        }
+        
+        function updateImageNumbers(chapterElement) {
+             chapterElement.querySelectorAll('.image-input-group').forEach((imageGroup, index) => {
+                imageGroup.querySelector('.image-number').textContent = index + 1;
+            });
+        }
+
+        // دالة عرض المعاينة
+        function displayImagePreview(previewContainer, imageID, base64String) {
+            const img = document.querySelector(`.preview-container img[data-image-id="${imageID}"]`) || document.createElement('img');
+            img.setAttribute('data-image-id', imageID);
+            img.src = base64String;
+            img.style.maxWidth = '100px';
+            img.style.maxHeight = '100px';
+            img.style.margin = '5px';
+            img.style.border = '1px solid #ddd';
+            
+            if (!previewContainer.contains(img)) {
+                previewContainer.appendChild(img);
+            }
+        }
+
+        // دالة معاينة الصورة وتحويلها لـ Base64
+        function previewImage(event) {
+            const fileInput = event.target;
+            const chapterID = fileInput.getAttribute('data-chapter-id');
+            const imageID = fileInput.getAttribute('data-image-id');
+            const file = fileInput.files[0];
+            
+            const chapterElement = document.querySelector(`.chapter-section[data-chapter-id="${chapterID}"]`);
+            const previewContainer = chapterElement.querySelector('.preview-container');
+            const base64HiddenInput = chapterElement.querySelector(`.image-input-group[data-image-id="${imageID}"] .base64-link`);
+
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const base64String = e.target.result;
+                    base64HiddenInput.value = base64String; 
+                    displayImagePreview(previewContainer, imageID, base64String);
+                };
+                reader.readAsDataURL(file);
+            } else {
+                base64HiddenInput.value = '';
+                const img = document.querySelector(`.preview-container img[data-image-id="${imageID}"]`);
+                if (img) img.remove();
+            }
+        }
+
+        // ===============================================
+        //           توليد الكود النهائي والبيانات
+        // ===============================================
+
+        function updateManhwaDataFromDOM() {
+            manhwaData.chapters = [];
+            
+            getChapterElements().forEach((chapterElement, index) => {
+                const chapterID = chapterElement.getAttribute('data-chapter-id');
+                const chapterName = chapterElement.querySelector('.chapter-name').value.trim();
+                
+                const base64Links = [];
+                chapterElement.querySelectorAll('.base64-link').forEach(input => {
+                    if (input.value) {
+                        base64Links.push(input.value);
+                    }
+                });
+
+                if (base64Links.length > 0) {
+                    manhwaData.chapters.push({
+                        id: chapterID,
+                        name: chapterName || `الفصل ${index + 1}`,
+                        base64Links: base64Links
+                    });
+                }
+            });
+        }
+
+        function generateBase64AndCode() {
+            if (!document.getElementById('manhwaName').value.trim()) {
+                 alert("الرجاء إدخال اسم المانهوا أولاً.");
+                 return;
+            }
+            
+            updateManhwaDataFromDOM();
+            
+            let chaptersHtml = '';
+            
+            manhwaData.chapters.forEach((chapter, index) => {
+                
+                const imagesHtml = chapter.base64Links.map(link => 
+                    `    <img src="${link}" alt="صورة ${chapter.name}">`
+                ).join('\n');
+
+                chaptersHtml += `
+<div class="chapter" id="chapter-${index + 1}">
+    <h2>${chapter.name}</h2>
+${imagesHtml}
+</div>
+            `;
+            });
+            
+            const finalCode = `
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${manhwaData.name} - قراءة الفصول</title>
+    <style>
+        body { font-family: 'Arial', sans-serif; background-color: #222; color: #fff; text-align: center; margin: 0; padding: 0; }
+        .manhwa-info { background: #333; padding: 20px; border-radius: 0; margin-bottom: 0; }
+        .manhwa-info h1 { color: #fff; border-bottom: 1px solid #555; padding-bottom: 10px; margin-bottom: 10px; }
+        .chapter img { max-width: 100%; height: auto; display: block; margin: 0 auto 5px auto; }
+        .chapter { margin-bottom: 30px; padding: 10px 0; background: #222; }
+    </style>
+</head>
+<body>
+    <div class="manhwa-info">
+        <h1>${manhwaData.name}</h1>
+        <p><strong>الحالة:</strong> ${manhwaData.status}</p>
+        <p><strong>التصنيف:</strong> ${manhwaData.genre}</p>
+        <p><strong>القصة:</strong> ${manhwaData.story}</p>
+    </div>
+
+${chaptersHtml}
+
+</body>
+</html>
+            `;
+
+            document.getElementById('finalHtmlCode').textContent = finalCode.trim();
+            
+            saveManhwaData();
+        }
+
+        function copyCode() {
+            const codeElement = document.getElementById('finalHtmlCode');
+            const textToCopy = codeElement.textContent;
+            
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                alert('تم نسخ كود HTML بنجاح!');
+            }).catch(err => {
+                console.error('فشل في نسخ النص: ', err);
+                alert('فشل في نسخ النص. يرجى النسخ يدوياً.');
+            });
+        }
+        
+        // ===============================================
+        //           دوال التحكم بالمعاينة (Modal)
+        // ===============================================
+
+        let resizeObserver = null;
+        function openPreviewModal() {
+            const finalCode = document.getElementById('finalHtmlCode').textContent.trim();
+            
+            if (!finalCode || finalCode === 'سيظهر الكود هنا بعد التوليد والحفظ...') {
+                alert("الرجاء توليد الكود النهائي أولاً قبل المعاينة.");
+                return;
+            }
+
+            const modal = document.getElementById('previewModal');
+            const iframe = document.getElementById('previewIframe');
+            
+            iframe.contentDocument.open();
+            iframe.contentDocument.write(finalCode);
+            iframe.contentDocument.close();
+
+            modal.style.display = "block";
+            
+            const wrapper = document.getElementById('emulatorFrameWrapper');
+            wrapper.style.width = '360px';
+            updateViewportWidthDisplay();
+            
+            if (!resizeObserver) {
+                resizeObserver = new ResizeObserver(updateViewportWidthDisplay);
+                resizeObserver.observe(wrapper);
+            }
+        }
+        
+        function closePreviewModal() {
+            document.getElementById('previewModal').style.display = "none";
+        }
+
+        function updateViewportWidthDisplay() {
+            const wrapper = document.getElementById('emulatorFrameWrapper');
+            const currentWidth = wrapper.offsetWidth;
+            document.getElementById('viewportWidth').textContent = `العرض: ${currentWidth}px`;
+        }
+        
+        function resetViewport() {
+            const wrapper = document.getElementById('emulatorFrameWrapper');
+            wrapper.style.width = '360px';
+            updateViewportWidthDisplay();
+        }
+        
+        // ===============================================
+        //           تفويض الأحداث (Event Delegation)
+        // ===============================================
+
+        mainContainer.addEventListener('click', function(e) {
+            const target = e.target;
+            const action = target.getAttribute('data-action');
+            const chapterElement = target.closest('.chapter-section');
+            const chapterID = chapterElement ? chapterElement.getAttribute('data-chapter-id') : null;
+            const imageID = target.getAttribute('data-image-id');
+
+            if (action === 'loadManhwa') {
+                loadManhwaForEditing();
+            } else if (action === 'addChapter') {
+                addChapter(null); // إضافة فصل جديد
+            } else if (action === 'removeChapter' && chapterID) {
+                removeChapter(chapterID);
+            } else if (action === 'addImageInputTemplate' && chapterElement) {
+                addImageInput(chapterElement, chapterID);
+            } else if (action === 'removeImage' && imageID) {
+                removeImage(imageID);
+            } else if (action === 'generateCode') {
+                generateBase64AndCode();
+            } else if (action === 'saveManhwa') {
+                saveManhwaData();
+            } else if (action === 'openPreview') {
+                openPreviewModal();
+            } else if (action === 'copyCode') {
+                copyCode();
+            } else if (action === 'closePreview') {
+                closePreviewModal();
+            } else if (action === 'resetViewport') {
+                resetViewport();
+            }
+        });
+
+        // ربط مستمع خاص لمدخلات الملفات (File Input)
+        mainContainer.addEventListener('change', function(e) {
+            const target = e.target;
+            const action = target.getAttribute('data-action');
+
+            if (target.type === 'file' && action === 'previewImage') {
+                previewImage(e);
+            }
+        });
+
+        // إغلاق النافذة المنبثقة عند النقر خارجها
+        document.getElementById('previewModal').addEventListener('click', function(event) {
+            if (event.target === this) {
+                closePreviewModal();
+            }
+        });
+
+
+        // التهيئة عند تحميل الصفحة
+        window.onload = function() {
+            populateExistingManhwaDropdown();
+            loadManhwaForEditing();
+        };
+    })();
+</script>
 
 </body>
 </html>
