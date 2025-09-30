@@ -42,7 +42,7 @@
         .top-bar .icon {
             font-size: 1.5em;
             cursor: pointer;
-            line-height: 1; /* لضمان محاذاة الرموز بشكل جيد */
+            line-height: 1; /* ✅ الإصلاح الأخير: لضمان محاذاة الرموز بشكل جيد في شريط التنقل */
         }
         
         /* زر العودة/الخلف - يستخدم في كل الواجهات */
@@ -537,10 +537,10 @@
         // استخدام رموز يونيكود للقلب: ❤️ للممتلئ، 🤍 للفارغ
         if (favorites.has(id)) {
             heartIcon.classList.add('active');
-            heartIcon.innerHTML = '❤️';
+            heartIcon.innerHTML = '❤️'; // قلب ممتلئ
         } else {
             heartIcon.classList.remove('active');
-            heartIcon.innerHTML = '🤍';
+            heartIcon.innerHTML = '🤍'; // قلب فارغ
         }
 
         // بناء قائمة الفصول (تنازليًا)
@@ -618,23 +618,4 @@
         const nextBtn = document.getElementById('next-chapter-btn');
         const infoSpan = document.getElementById('current-chapter-info');
         
-        prevBtn.disabled = (currentChapterIndex <= 0);
-        nextBtn.disabled = (currentChapterIndex >= currentManhwa.chapters.length - 1);
-        
-        const currentChapter = currentManhwa.chapters[currentChapterIndex];
-        infoSpan.textContent = `فصل ${currentChapter.num} من ${currentManhwa.chapters.length}`;
-    }
-
-
-    window.onload = () => {
-        if (MANHWAS_DATA.length > 0) {
-            renderManhwaCards(MANHWAS_DATA, 'manhwa-list');
-        } else {
-             document.getElementById('manhwa-list').innerHTML = '<p style="text-align:center; width:100%; color:#888; margin-top:20px;">لا توجد مانهوات لعرضها.</p>';
-        }
-        showScreen('home');
-    };
-</script>
-
-</body>
-</html>
+        prevBtn.disabled = (cur
