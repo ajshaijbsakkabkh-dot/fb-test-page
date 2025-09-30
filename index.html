@@ -31,7 +31,7 @@
             justify-content: space-between;
             align-items: center;
             padding: 15px;
-            background-color: #007bff; /* لون مميز لشريط الأدوات */
+            background-color: #007bff;
             color: white;
             position: sticky;
             top: 0;
@@ -42,10 +42,10 @@
         .top-bar .icon {
             font-size: 1.5em;
             cursor: pointer;
-            line-height: 1; /* ✅ الإصلاح الأخير: لضمان محاذاة الرموز بشكل جيد في شريط التنقل */
+            line-height: 1; /* لضمان محاذاة الرموز بشكل جيد */
         }
         
-        /* زر العودة/الخلف - يستخدم في كل الواجهات */
+        /* زر العودة/الخلف */
         #back-button {
             display: none; 
         }
@@ -54,12 +54,11 @@
         .screen {
             height: calc(100% - 50px);
             overflow-y: auto;
-            padding-bottom: 70px; /* مسافة سفلية */
+            padding-bottom: 70px;
             transition: transform 0.3s ease-in-out;
             box-sizing: border-box;
         }
         
-        /* إخفاء الشاشات */
         .screen:not(.active) {
             display: none;
         }
@@ -112,19 +111,11 @@
             transition: transform 0.2s;
         }
 
-        .manhwa-card:hover {
-            transform: translateY(-2px);
-        }
-
         .manhwa-card img {
             width: 100%;
             height: 200px;
             object-fit: cover;
             border-bottom: 1px solid #eee;
-        }
-
-        .manhwa-info {
-            padding: 10px;
         }
 
         .manhwa-info h3 {
@@ -161,12 +152,6 @@
             height: 250px;
         }
 
-        .details-header img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
         .details-overlay {
             position: absolute;
             top: 0;
@@ -181,11 +166,6 @@
             justify-content: flex-end;
         }
 
-        .details-overlay h2 {
-            margin: 0 0 5px 0;
-            font-size: 1.5em;
-        }
-        
         /* زر الإضافة للمفضلة (القلب بدون خلفية) */
         #favorite-button-container {
             position: absolute;
@@ -193,40 +173,15 @@
             left: 10px;
             z-index: 50;
         }
-        #favorite-button {
-            background: none;
-            border: none;
-            color: white;
-            font-size: 1.8em;
-            cursor: pointer;
-            padding: 5px;
-        }
-        
+
         .favorite-icon {
-            color: #ccc; /* لون القلب الفارغ */
+            color: #ccc; /* لون القلب الفارغ: 🤍 */
             transition: color 0.2s;
+            font-size: 1.8em;
         }
 
         .favorite-icon.active {
-            color: #ff3b30; /* قلب ممتلئ أحمر */
-        }
-
-        .details-content {
-            padding: 15px;
-        }
-        
-        .details-content h3 {
-            color: #007bff;
-            border-bottom: 2px solid #007bff;
-            padding-bottom: 5px;
-            margin-top: 20px;
-            margin-bottom: 15px;
-        }
-
-        .story-text {
-            font-size: 0.95em;
-            line-height: 1.6;
-            color: #555;
+            color: #ff3b30; /* قلب ممتلئ أحمر: ❤️ */
         }
 
         /* قائمة الفصول */
@@ -244,23 +199,13 @@
             cursor: pointer;
         }
 
-        .chapter-item:last-child {
-            border-bottom: none;
-        }
-
-        .chapter-item span {
-            color: #007bff;
-            font-weight: bold;
-        }
-        
-        
         /* ========================================= */
         /* 3. واجهة القراءة (القارئ)            */
         /* ========================================= */
         
         #reader-screen {
-            padding-bottom: 0; /* لا حاجة لمسافة سفلية */
-            background-color: #222; /* خلفية داكنة للقراءة */
+            padding-bottom: 0;
+            background-color: #222;
         }
         
         .reader-controls {
@@ -287,11 +232,6 @@
             gap: 5px;
         }
 
-        .reader-controls button:disabled {
-            color: #777;
-            cursor: not-allowed;
-        }
-
         .reader-content img {
             width: 100%;
             height: auto;
@@ -306,7 +246,7 @@
 <div class="app-container">
     
     <div class="top-bar">
-        <span id="back-button" class="icon" onclick="goBack()">&#10095;</span> 
+        <span id="back-button" class="icon" onclick="goBack()">❯</span> 
         <span id="header-title">واجهة جميع المانهوات</span>
         <span class="icon">⋮</span> 
     </div>
@@ -336,7 +276,7 @@
         
         <div id="favorite-button-container">
             <button id="favorite-button" onclick="toggleFavorite()">
-                <span class="icon favorite-icon" id="heart-icon">🤍</span>
+                <span class="favorite-icon" id="heart-icon">🤍</span>
             </button>
         </div>
 
@@ -355,22 +295,20 @@
             <p class="story-text" id="details-story"></p>
 
             <h3>الفصول</h3>
-            <ul class="chapter-list" id="details-chapter-list">
-                </ul>
+            <ul class="chapter-list" id="details-chapter-list"></ul>
         </div>
     </div>
 
     <div id="reader-screen" class="screen">
-        <div class="reader-content" id="chapter-images-container">
-            </div>
+        <div class="reader-content" id="chapter-images-container"></div>
         
         <div class="reader-controls">
             <button onclick="changeChapter(-1)" id="prev-chapter-btn" disabled>
-                <span class="icon">&#10094;</span> الفصل السابق
+                <span class="icon">❮</span> الفصل السابق
             </button>
             <span id="current-chapter-info"></span>
             <button onclick="changeChapter(1)" id="next-chapter-btn">
-                الفصل التالي <span class="icon">&#10095;</span>
+                الفصل التالي <span class="icon">❯</span>
             </button>
         </div>
     </div>
@@ -378,47 +316,30 @@
 </div>
 
 <script>
-    
-    const MANHWAS_DATA = [ {
-    "id": 1,
-    "title": "حمزو",
-    "cover": "data:image/jpeg;base64,/9j/4QAiRXhpZgAATU0AKgAAAA... (BASE64 DATA) ...",
-    "category": "أكشن، خيال، رومانسي",
-    "rating": "⭐ 4.5",
-    "chapters_count": 1,
-    "story": "ملخص قصة المانهوا...زينيننننين",
-    "chapters": [
-        {
-            "num": 1,
-            "title": "",
-            "images": [
-                "data:image/jpeg;base64,/9j/4QcnRXhpZgAATU0AKgAAAA... (BASE64 DATA) ...",
-                "data:image/jpeg;base64,/9j/4Q5URXhpZgAATU0AKgAAAA... (BASE64 DATA) ...",
-                "data:image/jpeg;base64,/9j/4QebRXhpZgAATU0AKgAAAA... (BASE64 DATA) ...",
-                "data:image/jpeg;base64,/9j/4QdqRXhpZgAATU0AKgAAAA... (BASE64 DATA) ...",
-                "data:image/jpeg;base64,/9j/4QdwRXhpZgAATU0AKgAAAA... (BASE64 DATA) ...",
-                "data:image/jpeg;base64,/9j/4QemRXhpZgAATU0AKgAAAA... (BASE64 DATA) ..."
-            ]
-        }
-    ]
-    }
-                          
+    // =========================================
+    //           بيانات المانهوا (MANHWAS_DATA)
+    //  **تم لصق بيانات مانهوا "حمزو" هنا في تعريف واحد صحيح**
+    // =========================================
+    const MANHWAS_DATA = [
         {
             "id": 1,
-            "title": "مانهوا جديدة",
+            "title": "حمزو",
             "cover": "data:image/jpeg;base64,/9j/4QAiRXhpZgAATU0AKgAAAA... (BASE64 DATA) ...",
             "category": "أكشن، خيال، رومانسي",
             "rating": "⭐ 4.5",
             "chapters_count": 1,
-            "story": "ملخص الشوط",
+            "story": "ملخص قصة المانهوا...زينيننننين",
             "chapters": [
                 {
                     "num": 1,
                     "title": "",
                     "images": [
                         "data:image/jpeg;base64,/9j/4QcnRXhpZgAATU0AKgAAAA... (BASE64 DATA) ...",
+                        "data:image/jpeg;base64,/9j/4Q5URXhpZgAATU0AKgAAAA... (BASE64 DATA) ...",
                         "data:image/jpeg;base64,/9j/4QebRXhpZgAATU0AKgAAAA... (BASE64 DATA) ...",
-                        "data:image/jpeg;base64,/9j/4QebRXhpZgAATU0AKgAAAA... (BASE64 DATA) ..."
+                        "data:image/jpeg;base64,/9j/4QdqRXhpZgAATU0AKgAAAA... (BASE64 DATA) ...",
+                        "data:image/jpeg;base64,/9j/4QdwRXhpZgAATU0AKgAAAA... (BASE64 DATA) ...",
+                        "data:image/jpeg;base64,/9j/4QemRXhpZgAATU0AKgAAAA... (BASE64 DATA) ..."
                     ]
                 }
             ]
@@ -554,7 +475,6 @@
         
         // تحديث حالة زر المفضلة
         const heartIcon = document.getElementById('heart-icon');
-        // استخدام رموز يونيكود للقلب: ❤️ للممتلئ، 🤍 للفارغ
         if (favorites.has(id)) {
             heartIcon.classList.add('active');
             heartIcon.innerHTML = '❤️'; // قلب ممتلئ
@@ -578,7 +498,7 @@
             const chapterTitle = chapter.title ? `: ${chapter.title}` : '';
             listItem.innerHTML = `
                 <span>فصل ${chapter.num}${chapterTitle}</span>
-                <span style="color:#007bff; font-weight:bold;">&#10095;</span> `;
+                <span style="color:#007bff; font-weight:bold;">❯</span> `;
             chapterList.appendChild(listItem);
         });
         
@@ -594,12 +514,12 @@
         if (favorites.has(id)) {
             favorites.delete(id);
             heartIcon.classList.remove('active');
-            heartIcon.innerHTML = '🤍'; // قلب فارغ
+            heartIcon.innerHTML = '🤍';
             alert(`تمت إزالة ${currentManhwa.title} من المفضلة.`);
         } else {
             favorites.add(id);
             heartIcon.classList.add('active');
-            heartIcon.innerHTML = '❤️'; // قلب ممتلئ
+            heartIcon.innerHTML = '❤️';
             alert(`تمت إضافة ${currentManhwa.title} إلى المفضلة!`);
         }
         saveFavorites(); 
@@ -638,4 +558,23 @@
         const nextBtn = document.getElementById('next-chapter-btn');
         const infoSpan = document.getElementById('current-chapter-info');
         
-        prevBtn.disabled = (cur
+        prevBtn.disabled = (currentChapterIndex <= 0);
+        nextBtn.disabled = (currentChapterIndex >= currentManhwa.chapters.length - 1);
+        
+        const currentChapter = currentManhwa.chapters[currentChapterIndex];
+        infoSpan.textContent = `فصل ${currentChapter.num} من ${currentManhwa.chapters.length}`;
+    }
+
+
+    window.onload = () => {
+        if (MANHWAS_DATA.length > 0) {
+            renderManhwaCards(MANHWAS_DATA, 'manhwa-list');
+        } else {
+             document.getElementById('manhwa-list').innerHTML = '<p style="text-align:center; width:100%; color:#888; margin-top:20px;">لا توجد مانهوات لعرضها.</p>';
+        }
+        showScreen('home');
+    };
+</script>
+
+</body>
+</html>
